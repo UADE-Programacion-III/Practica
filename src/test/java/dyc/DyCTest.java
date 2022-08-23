@@ -93,4 +93,27 @@ public class DyCTest {
         n = 5;
         assertEquals(8, DyC.fibonacci(n));
     }
+
+    @Test
+    public void elementoMayoritarioTest() {
+        VectorTDA<Integer> s = new Vector<>();
+        int elementos = 10;
+        s.inicializarVector(elementos);
+        s.agregarElemento(0, 1);
+        s.agregarElemento(1, 1);
+        s.agregarElemento(2, 3);
+        s.agregarElemento(3, 3);
+        s.agregarElemento(4, 1);
+        s.agregarElemento(5, 3);
+        s.agregarElemento(6, 1);
+        s.agregarElemento(7, 4);
+        s.agregarElemento(8, 1);
+        s.agregarElemento(9, 1);
+        assertEquals(1, DyC.elementoMayoritario(s));
+        s.inicializarVector(elementos);
+        for (int i = 0; i < elementos; i++) {
+            s.agregarElemento(i, i);
+        }
+        assertEquals(-1, DyC.elementoMayoritario(s));
+    }
 }
