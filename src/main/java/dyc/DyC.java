@@ -101,4 +101,66 @@ public class DyC {
             }
         }
     }
+
+    public static int sumaMaxima(VectorTDA<Integer> vector, int indiceIzquierdo, int indiceDerecho) {
+        if (indiceIzquierdo > indiceDerecho) {
+            return Integer.MIN_VALUE;
+        }
+        if (indiceIzquierdo == indiceDerecho) {
+            return vector.recuperarElemento(indiceIzquierdo);
+        }
+        int medio = (indiceDerecho + indiceIzquierdo) / 2;
+        return Math.max(sumaMaxima(vector, indiceIzquierdo, medio - 1), Math.max(sumaMaxima(vector, medio + 1, indiceDerecho), maximaSumaCruzada(vector, indiceIzquierdo, medio, indiceDerecho)));
+    }
+
+    private static int maximaSumaCruzada(VectorTDA<Integer> vector, int indiceIzquierdo, int medio, int indiceDerecho) {
+        int sumaParcial = 0;
+        int sumaMaximaIzquierda = Integer.MIN_VALUE;
+        for (int i = indiceIzquierdo; i <= medio; i++) {
+            sumaParcial+= vector.recuperarElemento(i);
+            if (sumaParcial > sumaMaximaIzquierda) {
+                sumaMaximaIzquierda = sumaParcial;
+            }
+        }
+        sumaParcial = 0;
+        int sumaMaximaDerecha = Integer.MIN_VALUE;
+        for (int i = medio; i <= indiceDerecho; i++) {
+            sumaParcial+= vector.recuperarElemento(i);
+            if (sumaParcial > sumaMaximaDerecha) {
+                sumaMaximaDerecha = sumaParcial;
+            }
+        }
+        return Math.max(sumaMaximaIzquierda + sumaMaximaDerecha - vector.recuperarElemento(medio), Math.max(sumaMaximaIzquierda, sumaMaximaDerecha));
+    }
+
+    public static int puntoNegativoEnFuncion(Funcion funcion) {
+        if (funcion.evaluar(0) <= 0) {
+            return 0;
+        }
+        int i = 1;
+        while (funcion.evaluar(i) > 0) {
+            i*=2;
+        }
+        return busquedaBinariaFuncion(funcion, i/2, i);
+    }
+
+    private static int busquedaBinariaFuncion(Funcion funcion, int limiteInferior, int limiteSuperior) {
+        if (limiteSuperior >= limiteInferior) {
+            int mitad = (limiteInferior + limiteSuperior) / 2;
+            if (funcion.evaluar(mitad) <= 0 && funcion.evaluar(mitad - 1) > 0) {
+                return mitad;
+            }
+            if (funcion.evaluar(mitad) < 0) {
+                return busquedaBinariaFuncion(funcion, limiteInferior, mitad - 1);
+            } else {
+                return busquedaBinariaFuncion(funcion, mitad + 1, limiteSuperior);
+            }
+        }
+        return -1;
+    }
+
+
+    public interface Funcion {
+        int evaluar(int x);
+    }
 }
