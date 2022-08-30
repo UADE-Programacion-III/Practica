@@ -4,6 +4,8 @@ import org.junit.Test;
 import tda.VectorTDA;
 import tda.impl.Vector;
 
+import java.util.Comparator;
+
 import static org.junit.Assert.assertEquals;
 
 public class OrdenamientoTest {
@@ -16,7 +18,7 @@ public class OrdenamientoTest {
             s.agregarElemento(i, elementos - i);
         }
         // Antes de ordenar: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
-        Ordenamiento.mergeSort(s, 0, elementos - 1);
+        Ordenamiento.mergeSort(s, 0, elementos - 1, Comparator.naturalOrder());
         // Después de ordenar: [1, 2, 3, 4, 5, 6, 7, 8 ,9, 10]
         assertEquals(elementos, s.capacidadVector());
         for (int i = 0; i < elementos; i++) {
@@ -29,7 +31,7 @@ public class OrdenamientoTest {
             s.agregarElemento(i, elementos - i);
         }
         // Antes de ordenar: [9, 8, 7, 6, 5, 4, 3, 2, 1]
-        Ordenamiento.mergeSort(s, 0, elementos - 1);
+        Ordenamiento.mergeSort(s, 0, elementos - 1,  Comparator.naturalOrder());
         // Después de ordenar: [1, 2, 3, 4, 5, 6, 7, 8 ,9]
         assertEquals(elementos, s.capacidadVector());
         for (int i = 0; i < elementos; i++) {
@@ -46,7 +48,7 @@ public class OrdenamientoTest {
             s.agregarElemento(i, i + 1);
         }
         // Antes de ordenar: [1, 2, 3, 4, 5, 6, 7, 8 ,9, 10]
-        Ordenamiento.mergeSort(s, 0, elementos - 1);
+        Ordenamiento.mergeSort(s, 0, elementos - 1,  Comparator.naturalOrder());
         // Después de ordenar: [1, 2, 3, 4, 5, 6, 7, 8 ,9, 10]
         assertEquals(elementos, s.capacidadVector());
         for (int i = 0; i < elementos; i++) {
@@ -59,7 +61,7 @@ public class OrdenamientoTest {
         VectorTDA<Integer> s = new Vector<>();
         int elementos = 0;
         s.inicializarVector(elementos);
-        Ordenamiento.mergeSort(s, 0, elementos);
+        Ordenamiento.mergeSort(s, 0, elementos,  Comparator.naturalOrder());
         assertEquals(elementos, s.capacidadVector());
     }
 
@@ -72,7 +74,7 @@ public class OrdenamientoTest {
             s.agregarElemento(i, (elementos - i) / 2);
         }
         // Antes de ordenar: [5, 4, 4, 3, 3, 2, 2, 1, 1, 0]
-        Ordenamiento.mergeSort(s, 0, elementos - 1);
+        Ordenamiento.mergeSort(s, 0, elementos - 1,  Comparator.naturalOrder());
         // Después de ordenar: [0, 1, 1, 2, 2, 3, 3, 4, 4, 5]
         assertEquals(elementos, s.capacidadVector());
         for (int i = 0; i < elementos; i++) {
