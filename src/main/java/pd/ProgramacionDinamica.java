@@ -2,9 +2,13 @@ package pd;
 
 import dyc.Ordenamiento;
 import greedy.modelos.Objeto;
+import tda.ConjuntoTDA;
+import tda.GrafoDirigidoTDA;
 import tda.MatrizTDA;
 import tda.VectorTDA;
+import tda.impl.GrafoDirigido;
 import tda.impl.Matriz;
+import tda.impl.Vector;
 
 import java.util.Comparator;
 
@@ -58,5 +62,101 @@ public class ProgramacionDinamica {
             }
         }
         return matriz.obtenerValor(objetos.capacidadVector() - 1, peso - 1);
+    }
+
+    public static int longitudSubsecuenciaMaxima(VectorTDA<Character> x, VectorTDA<Character> y) {
+        int longitudX = Math.max(1, x.capacidadVector());
+        int longitudY = Math.max(1, y.capacidadVector());
+        MatrizTDA<Integer> matriz = new Matriz<>();
+        matriz.inicializarMatriz(longitudX, longitudY);
+        for (int i = 0; i < longitudX; i++) {
+            for (int j = 0; j < longitudY; j++) {
+                if (i == 0 || j == 0) {
+                    matriz.setearValor(i, j, 0);
+                }
+            }
+        }
+        for (int i = 1; i < x.capacidadVector(); i++) {
+            for (int j = 1; j < y.capacidadVector(); j++) {
+                if (x.recuperarElemento(i - 1).equals(y.recuperarElemento(j - 1))) {
+                    matriz.setearValor(i, j, matriz.obtenerValor(i - 1, j - 1) + 1);
+                } else {
+                    matriz.setearValor(i, j, Math.max(matriz.obtenerValor(i - 1, j), matriz.obtenerValor(i, j - 1)));
+                }
+            }
+        }
+        return matriz.obtenerValor(longitudX - 1, longitudY - 1);
+    }
+
+    public static int subsecuenciaCrecienteMasLarga(VectorTDA<Integer> x) {
+        int longitud = 1;
+        VectorTDA<Integer> resultado = new Vector<>();
+        resultado.inicializarVector(x.capacidadVector());
+        for (int i = 0; i < x.capacidadVector(); i++) {
+            resultado.agregarElemento(i, 1);
+        }
+        for (int i = 0; i < x.capacidadVector(); i++) {
+            for (int j = 0; j < i; j++) {
+                if (x.recuperarElemento(i) > x.recuperarElemento(j)) {
+                    resultado.agregarElemento(i, Math.max(resultado.recuperarElemento(i), resultado.recuperarElemento(j) + 1));
+                }
+            }
+            int longitudParcial = resultado.recuperarElemento(i);
+            if (longitud < longitudParcial) {
+                longitud = longitudParcial;
+            }
+        }
+        return longitud;
+    }
+
+    public static <E> GrafoDirigidoTDA<E> floyd(GrafoDirigidoTDA<E> grafo) {
+        ConjuntoTDA<E> conjuntoI, conjuntoJ, conjuntoK;
+        E i, j, k;
+        GrafoDirigidoTDA<E> r = new GrafoDirigido<>();
+        r.inicializarGrafo();
+        conjuntoK = grafo.vertices();
+        while (!conjuntoK.conjuntoVacio()) {
+            k = conjuntoK.elegir();
+            conjuntoK.sacar(k);
+            r.agregarVertice(k);
+        }
+        conjuntoK = grafo.vertices();
+        while (!conjuntoK.conjuntoVacio()) {
+            k = conjuntoK.elegir();
+            conjuntoK.sacar(k);
+            conjuntoI = grafo.adyacentes(k);
+            while (!conjuntoI.conjuntoVacio()) {
+                i = conjuntoI.elegir();
+                conjuntoI.sacar(i);
+                r.agregarArista(k, i, grafo.pesoArista(k, i));
+            }
+        }
+        conjuntoK = grafo.vertices();
+        while (!conjuntoK.conjuntoVacio()) {
+            k = conjuntoK.elegir();
+            conjuntoK.sacar(k);
+            conjuntoI = grafo.vertices();
+            conjuntoI.sacar(k);
+            while (!conjuntoI.conjuntoVacio()) {
+                i = conjuntoI.elegir();
+                conjuntoI.sacar(i);
+                if (r.existeArista(i, k)) {
+                    conjuntoJ = r.adyacentes(k);
+                    conjuntoJ.sacar(i);
+                    while (!conjuntoJ.conjuntoVacio()) {
+                        j = conjuntoJ.elegir();
+                        conjuntoJ.sacar(j);
+                        if (r.existeArista(i, j)) {
+                            if (r.pesoArista(i, k) + r.pesoArista(k, j) < r.pesoArista(i, j)) {
+                                r.agregarArista(i, j, r.pesoArista(i, k) + r.pesoArista(k, j));
+                            }
+                        } else {
+                            r.agregarArista(i, j, r.pesoArista(i, k) + r.pesoArista(k, j));
+                        }
+                    }
+                }
+            }
+        }
+        return r;
     }
 }
