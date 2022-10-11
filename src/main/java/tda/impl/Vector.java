@@ -36,4 +36,11 @@ public class Vector<E> implements VectorTDA<E> {
     public E recuperarElemento(int posicion) {
         return this.vector.get(posicion);
     }
+
+    @Override
+    public String toString() {
+        return "Vector{" +
+                "vector=" + vector +
+                '}';
+    }
 }
