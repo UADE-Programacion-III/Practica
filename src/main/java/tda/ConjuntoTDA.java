@@ -14,4 +14,6 @@ public interface ConjuntoTDA<E> {
     void sacar(E elemento);
 
     int capacidad();
+
+    VectorTDA<E> aVector();
 }
