@@ -2,6 +2,7 @@ package backtracking;
 
 import tda.ConjuntoTDA;
 import tda.GrafoDirigidoTDA;
+import tda.GrafoTDA;
 import tda.VectorTDA;
 import tda.impl.Conjunto;
 
@@ -108,5 +109,62 @@ public class Backtracking {
             }
         }
         return null;
+    }
+
+    public static <E> int tsp(GrafoTDA<E> grafo, E actual, ConjuntoTDA<E> visitados, VectorTDA<E> solucionActual, Integer costoActual,  VectorTDA<E> mejorSolucion, Integer mejorCosto, int etapa) {
+        solucionActual.agregarElemento(etapa, actual);
+        if (visitados.capacidad() == grafo.vertices().capacidad()) {
+            solucionActual.agregarElemento(etapa + 1, solucionActual.recuperarElemento(0));
+            costoActual = calcularCosto(grafo, solucionActual);
+            if (costoActual < mejorCosto) {
+                // mejorSolucion = solucionActual; Descomentar si necesitamos el recorrido
+                mejorCosto = costoActual;
+            }
+        } else {
+            VectorTDA<E> adyacentes = grafo.adyacentes(actual).aVector();
+            for (int i = 0; i< adyacentes.capacidadVector(); i++) {
+                E vecino = adyacentes.recuperarElemento(i);
+                if (!visitados.pertenece(vecino)) {
+                    visitados.agregar(vecino);
+                    mejorCosto = tsp(grafo, vecino, visitados, solucionActual, costoActual, mejorSolucion, mejorCosto,etapa + 1);
+                    visitados.sacar(vecino);
+                }
+            }
+        }
+        return mejorCosto;
+    }
+
+    private static <E> int calcularCosto(GrafoTDA<E> grafo, VectorTDA<E> solucionActual) {
+        int costo = 0;
+        for (int i = 0; i< solucionActual.capacidadVector() - 1; i++) {
+            costo += grafo.pesoArista(solucionActual.recuperarElemento(i), solucionActual.recuperarElemento(i+1));
+        }
+        return costo;
+    }
+
+    public static int mochila(VectorTDA<Integer> pesos, VectorTDA<Integer> valores, int capacidad, VectorTDA <Integer> mejorSolucion, int mejorValor, VectorTDA<
+            Integer> actualSolucion, int actualValor, int actualPeso, int etapa) {
+        for (int i = 0; i < 2; i++) {
+            actualSolucion.agregarElemento(etapa, i);
+            actualPeso += i * pesos.recuperarElemento (etapa);
+            actualValor += i * valores.recuperarElemento(etapa);
+            if (actualPeso <= capacidad) {
+                if (etapa + 1 == valores.capacidadVector()) {
+                    if (mejorValor == -1 || mejorValor <
+                            actualValor) {
+                        mejorSolucion = actualSolucion;
+                        mejorValor = actualValor;
+                    }
+                } else {
+                    if (etapa + 1 < valores.capacidadVector()) {
+                        mejorValor = mochila(pesos, valores,
+                                capacidad, mejorSolucion, mejorValor,
+                                actualSolucion, actualValor, actualPeso,
+                                etapa + 1);
+                    }
+                }
+            }
+        }
+        return mejorValor;
     }
 }

@@ -5,8 +5,10 @@ import backtracking.labertinto.Mapa;
 import org.junit.Test;
 import tda.ConjuntoTDA;
 import tda.GrafoDirigidoTDA;
+import tda.GrafoTDA;
 import tda.VectorTDA;
 import tda.impl.Conjunto;
+import tda.impl.Grafo;
 import tda.impl.GrafoDirigido;
 import tda.impl.Vector;
 
@@ -140,4 +142,68 @@ public class BacktrackingTest {
         assertEquals(6, mapa4.escapar());
     }
 
+    @Test
+    public void tspTest() {
+        GrafoTDA<Character> grafo = new Grafo<>();
+        grafo.inicializarGrafo();
+        grafo.agregarVertice('a');
+        grafo.agregarVertice('b');
+        grafo.agregarVertice('c');
+        grafo.agregarVertice('d');
+        grafo.agregarVertice('e');
+        grafo.agregarVertice('f');
+        grafo.agregarArista('a', 'b', 4);
+        grafo.agregarArista('a', 'c', 1);
+        grafo.agregarArista('a', 'd', 5);
+        grafo.agregarArista('a', 'e', 1);
+        grafo.agregarArista('a', 'f', 4);
+        grafo.agregarArista('b', 'c', 5);
+        grafo.agregarArista('b', 'd', 1);
+        grafo.agregarArista('b', 'e', 2);
+        grafo.agregarArista('b', 'f', 3);
+        grafo.agregarArista('c', 'd', 3);
+        grafo.agregarArista('c', 'e', 2);
+        grafo.agregarArista('c', 'f', 5);
+        grafo.agregarArista('d', 'e', 3);
+        grafo.agregarArista('d', 'f', 3);
+        grafo.agregarArista('e', 'f', 2);
+        Character origen = 'a';
+        ConjuntoTDA<Character> visitados = new Conjunto<>();
+        visitados.inicializarConjunto();
+        visitados.agregar(origen);
+        VectorTDA<Character> solucionActual = new Vector<>();
+        solucionActual.inicializarVector(grafo.vertices().capacidad() + 1);
+        VectorTDA<Character> mejorSolucion = new Vector<>();
+        mejorSolucion.inicializarVector(grafo.vertices().capacidad() + 1);
+        assertEquals(11, Backtracking.tsp(grafo, origen, visitados, solucionActual, 0, mejorSolucion, Integer.MAX_VALUE, 0));
+    }
+
+    @Test
+    public void mochilaTest() {
+        int objetos = 4;
+        int capacidad = 15;
+        VectorTDA<Integer> pesos = new Vector<>();
+        VectorTDA<Integer> valores = new Vector<>();
+        VectorTDA<Integer> mejorSolucion = new Vector<>();
+        VectorTDA<Integer> actualSolucion = new Vector<>();
+        pesos.inicializarVector(objetos);
+        valores.inicializarVector(objetos);
+        mejorSolucion.inicializarVector(objetos);
+        actualSolucion.inicializarVector(objetos);
+        pesos.agregarElemento(0, 2);
+        pesos.agregarElemento(1, 4);
+        pesos.agregarElemento(2, 6);
+        pesos.agregarElemento(3, 9);
+        valores.agregarElemento(0, 10);
+        valores.agregarElemento(1, 10);
+        valores.agregarElemento(2, 12);
+        valores.agregarElemento(3, 18);
+        int etapa = 0;
+        int mejorValor = -1;
+        int actualValor = 0;
+        int actualPeso = 0;
+        assertEquals(38, Backtracking.mochila(pesos, valores, capacidad,
+                mejorSolucion, mejorValor, actualSolucion,
+                actualValor, actualPeso, etapa));
+    }
 }
