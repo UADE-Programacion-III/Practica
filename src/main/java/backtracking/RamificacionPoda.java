@@ -1,7 +1,10 @@
 package backtracking;
 
 import greedy.modelos.Objeto;
+import tda.ConjuntoTDA;
+import tda.MatrizTDA;
 import tda.VectorTDA;
+import tda.impl.Conjunto;
 import tda.impl.Vector;
 
 import java.util.Comparator;
@@ -109,6 +112,116 @@ public class RamificacionPoda {
                         } else {
                             cota = mochilaValorPoda(hijos.recuperarElemento(i), cota);
                             LNV.add(hijos.recuperarElemento(i));
+                        }
+                    }
+                }
+            }
+        }
+        return mejorSolucion.getActualSolucion();
+    }
+
+    private static NodoBB<Integer> asignacionCrearNodoRaiz(MatrizTDA<Integer> tareasPorEmpleado) {
+        NodoBB<Integer> raiz = new NodoBB<>();
+        VectorTDA<Integer> actualSolucion = new Vector<>();
+        actualSolucion.inicializarVector(tareasPorEmpleado.obtenerDimension());
+        for (int i = 0; i < tareasPorEmpleado.obtenerDimension(); i++) {
+            actualSolucion.agregarElemento(i, -1);
+        }
+        raiz.setActualSolucion(actualSolucion);
+        raiz.setEtapa(-1);
+        raiz.setDato(0);
+        raiz.setCotaInferior(0);
+        raiz.setCotaSuperior(asignacionActualizarCotaSuperior(raiz, tareasPorEmpleado));
+        return raiz;
+    }
+
+    private static int asignacionActualizarCotaSuperior(NodoBB<Integer> nodo, MatrizTDA<Integer> tareasPorEmpleado) {
+        if (nodo.getEtapa() == tareasPorEmpleado.obtenerDimension()) {
+            return nodo.getDato();
+        } else {
+            int valor = nodo.getDato();
+            for (int i = nodo.getEtapa() + 1; i < tareasPorEmpleado.obtenerDimension(); i++) {
+                valor += elegirMaximaTareaNoAsignada(nodo.getActualSolucion(), tareasPorEmpleado, i);
+            }
+            return valor;
+        }
+    }
+
+    private static int elegirMaximaTareaNoAsignada(VectorTDA<Integer> actualSolucion, MatrizTDA<Integer> tareasPorEmpleado, int empleado) {
+        int maximo = Integer.MIN_VALUE;
+        for (int i = 0; i< tareasPorEmpleado.obtenerDimension(); i++) {
+            if (!actualSolucion.contieneElemento(tareasPorEmpleado.obtenerValor(empleado, i))) {
+                maximo = Math.max(maximo, tareasPorEmpleado.obtenerValor(empleado, i));
+            }
+        }
+        return maximo;
+    }
+
+    private static int actualizarCota(NodoBB<Integer> nodo, int cota) {
+        return Math.min(nodo.getCotaSuperior(), cota);
+    }
+
+    private static boolean podar(NodoBB<Integer> nodo, int cota) {
+        return nodo.getCotaInferior() > cota;
+    }
+
+    private static ConjuntoTDA<NodoBB<Integer>> generarHijos(NodoBB<Integer> nodo, MatrizTDA<Integer> tareasPorEmpleado) {
+        ConjuntoTDA<NodoBB<Integer>> hijos = new Conjunto<>();
+        hijos.inicializarConjunto();
+        for (int i = 0; i < tareasPorEmpleado.obtenerDimension(); i++) {
+            if (!tareaUsada(nodo, i)) {
+                NodoBB<Integer> hijo = new NodoBB<>();
+                VectorTDA<Integer> solucionParcial = new Vector<>();
+                solucionParcial.inicializarVector(tareasPorEmpleado.obtenerDimension());
+                copiarVector(nodo.getActualSolucion(), solucionParcial, tareasPorEmpleado.obtenerDimension());
+                hijo.setActualSolucion(solucionParcial);
+                solucionParcial.agregarElemento(nodo.getEtapa() + 1, i);
+                hijo.setDato(nodo.getDato() + tareasPorEmpleado.obtenerValor(nodo.getEtapa() + 1, i));
+                hijo.setCotaInferior(hijo.getDato());
+                hijo.setCotaSuperior(asignacionActualizarCotaSuperior(hijo, tareasPorEmpleado));
+                hijo.setEtapa(nodo.getEtapa() + 1);
+                hijos.agregar(hijo);
+            }
+        }
+        return hijos;
+    }
+
+    private static boolean tareaUsada(NodoBB<Integer> nodo, int i) {
+        return nodo.getActualSolucion().contieneElemento(i);
+    }
+
+    private static boolean esSolucion(NodoBB<Integer> nodo) {
+        return nodo.getEtapa() + 1 == nodo.getActualSolucion().capacidadVector();
+    }
+
+    private static boolean esMejorSolucion(int mejorSolucion, NodoBB<Integer> nodo) {
+        return nodo.getDato() < mejorSolucion;
+    }
+
+    public static VectorTDA<Integer> asignacionRyP(MatrizTDA<Integer> tareasPorEmpleado) {
+        int cota = Integer.MAX_VALUE;
+        NodoBB<Integer> nAux;
+        NodoBB<Integer> raiz;
+        raiz = asignacionCrearNodoRaiz(tareasPorEmpleado);
+        Queue<NodoBB<Integer>> LNV = new PriorityQueue<>(Comparator.comparingInt(NodoBB::getCotaInferior));
+        cota = actualizarCota(raiz, cota);
+        LNV.add(raiz);
+        NodoBB<Integer> mejorSolucion = raiz;
+        while (!LNV.isEmpty()) {
+            nAux = LNV.poll();
+            if (!podar(nAux, cota)) {
+                VectorTDA<NodoBB<Integer>> hijos = generarHijos(nAux, tareasPorEmpleado).aVector();
+                for (int i = 0; i < hijos.capacidadVector(); i++) {
+                    NodoBB<Integer> hijo = hijos.recuperarElemento(i);
+                    if (!podar(hijo, cota)) {
+                        if (esSolucion(hijo)) {
+                            if (esMejorSolucion(mejorSolucion.getDato(), hijo) || mejorSolucion.getEtapa() == -1) {
+                                mejorSolucion = hijo;
+                                cota = actualizarCota(hijo, cota);
+                            }
+                        } else {
+                            cota = actualizarCota(hijo, cota);
+                            LNV.add(hijo);
                         }
                     }
                 }

@@ -38,6 +38,11 @@ public class Vector<E> implements VectorTDA<E> {
     }
 
     @Override
+    public boolean contieneElemento(E elemento) {
+        return this.vector.contains(elemento);
+    }
+
+    @Override
     public String toString() {
         return "Vector{" +
                 "vector=" + vector +

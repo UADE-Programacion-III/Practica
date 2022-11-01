@@ -10,4 +10,6 @@ public interface VectorTDA<E> {
     void inicializarVector(int n);
 
     E recuperarElemento(int posicion);
+
+    boolean contieneElemento(E elemento);
 }
