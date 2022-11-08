@@ -12,4 +12,6 @@ public interface VectorTDA<E> {
     E recuperarElemento(int posicion);
 
     boolean contieneElemento(E elemento);
+
+    VectorTDA<E> copiar();
 }

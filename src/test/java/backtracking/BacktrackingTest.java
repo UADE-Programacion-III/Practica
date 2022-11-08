@@ -2,6 +2,8 @@ package backtracking;
 
 import backtracking.labertinto.EntradaFaltanteException;
 import backtracking.labertinto.Mapa;
+import backtracking.rey.Celda;
+import backtracking.rey.Resultado;
 import org.junit.Test;
 import tda.ConjuntoTDA;
 import tda.GrafoDirigidoTDA;
@@ -205,5 +207,37 @@ public class BacktrackingTest {
         assertEquals(38, Backtracking.mochila(pesos, valores, capacidad,
                 mejorSolucion, mejorValor, actualSolucion,
                 actualValor, actualPeso, etapa));
+    }
+
+    @Test
+    public void reyTest() {
+        GrafoTDA<Celda> grafo = new Grafo<>();
+        grafo.inicializarGrafo();
+        Celda c1 = new Celda(0, 0, 20);
+        Celda c2 = new Celda(1, 0, 30);
+        Celda c3 = new Celda(0, 1, 70);
+        Celda c4 = new Celda(1, 1, 10);
+        grafo.agregarVertice(c1);
+        grafo.agregarVertice(c2);
+        grafo.agregarVertice(c3);
+        grafo.agregarVertice(c4);
+        grafo.agregarArista(c1, c2, 1);
+        grafo.agregarArista(c1, c3, 1);
+        grafo.agregarArista(c1, c4, 1);
+        grafo.agregarArista(c2, c3, 1);
+        grafo.agregarArista(c2, c4, 1);
+        grafo.agregarArista(c3, c4, 1);
+        ConjuntoTDA<Celda> visitados = new Conjunto<>();
+        visitados.inicializarConjunto();
+        visitados.agregar(c1);
+        int pesoActual = 0;
+        int mejorPeso = Integer.MAX_VALUE;
+        VectorTDA<Celda> mejorCamino = new Vector<>();
+        mejorCamino.inicializarVector(4);
+        VectorTDA<Celda> camino = new Vector<>();
+        camino.inicializarVector(4);
+        Resultado resultado = new Resultado(mejorPeso, camino);
+        int etapa = 0;
+        assertEquals(290, Backtracking.rey(grafo, visitados, pesoActual, resultado, etapa, c1, camino).getMejorPeso());
     }
 }

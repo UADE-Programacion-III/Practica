@@ -1,5 +1,7 @@
 package backtracking;
 
+import backtracking.rey.Celda;
+import backtracking.rey.Resultado;
 import tda.ConjuntoTDA;
 import tda.GrafoDirigidoTDA;
 import tda.GrafoTDA;
@@ -166,5 +168,28 @@ public class Backtracking {
             }
         }
         return mejorValor;
+    }
+
+    public static Resultado rey(GrafoTDA<Celda> todasCeldas, ConjuntoTDA<Celda> visitados, int pesoActual, Resultado resultado, int etapa, Celda celdaActual, VectorTDA<Celda> camino) {
+        camino.agregarElemento(etapa, celdaActual);
+        pesoActual += ((etapa + 1) * celdaActual.getPeso());
+        if (visitados.capacidad() == todasCeldas.vertices().capacidad()) { //Visite todas las celdas
+            if (pesoActual < resultado.getMejorPeso()) { //Si el peso que tengo ahora es mejor que el anterior
+                resultado = new Resultado(pesoActual, camino.copiar());
+            }
+        } else {
+            //Obtener los adyacentes de la celda actual desde la función adyacentes
+            VectorTDA<Celda> adyacentes = todasCeldas.adyacentes(celdaActual).aVector();
+            for (int i = 0; i < adyacentes.capacidadVector(); i++) {
+                //Llamar a la funcion recursivamente para la siguiente celda
+                celdaActual = adyacentes.recuperarElemento(i);
+                if (!visitados.pertenece(celdaActual)) {
+                    visitados.agregar(celdaActual);
+                    resultado = rey(todasCeldas, visitados, pesoActual, resultado, etapa + 1, celdaActual, camino);
+                    visitados.sacar(celdaActual);
+                }
+            }
+        }
+        return resultado;
     }
 }
