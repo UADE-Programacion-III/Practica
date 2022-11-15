@@ -48,6 +48,7 @@ public class Juegos {
     }
 
     public static int tateti(char [][] tablero, char jugador) {
+        System.out.println("Recorriendo nodo");
         int valor;
         if (esGanador(tablero, JUGADOR)) {
             return 1;
@@ -138,6 +139,49 @@ public class Juegos {
             divisiones.agregarElemento(i - 1, division);
         }
         return divisiones;
+    }
+
+    public static int tatetiAlfaBeta(char [][] tablero, char jugador, int alfa, int beta) {
+        System.out.println("Recorriendo nodo");
+        if (esGanador(tablero, JUGADOR)) {
+            return 1;
+        }
+        if (esGanador(tablero, OPONENTE)) {
+            return -1;
+        }
+        VectorTDA<Par<Integer, Integer>> espaciosVacios = obtenerEspaciosVaciosEnTablero(tablero);
+        if (espaciosVacios.capacidadVector() == 0) {
+            return 0;
+        }
+        if (jugador == JUGADOR) {
+            int valor = Integer.MIN_VALUE;
+            for (int i = 0; i < espaciosVacios.capacidadVector(); i++) {
+                Par<Integer, Integer> coordenadas = espaciosVacios.recuperarElemento(i);
+                tablero[coordenadas.getValor1()][coordenadas.getValor2()] = jugador;
+                valor = Math.max(valor, tatetiAlfaBeta(tablero, OPONENTE, alfa, beta));
+                alfa = Math.max(alfa, valor);
+                if (alfa >= beta) {
+                    System.out.printf("Poda: alfa %d, beta: %d\n", alfa, beta);
+                    return alfa;
+                }
+                tablero[coordenadas.getValor1()][coordenadas.getValor2()] = 0;
+            }
+            return alfa;
+        } else {
+            int valor = Integer.MAX_VALUE;
+            for (int i = 0; i < espaciosVacios.capacidadVector(); i++) {
+                Par<Integer, Integer> coordenadas = espaciosVacios.recuperarElemento(i);
+                tablero[coordenadas.getValor1()][coordenadas.getValor2()] = jugador;
+                valor = Math.min(valor, tatetiAlfaBeta(tablero, JUGADOR, alfa, beta));
+                beta = Math.min(valor, beta);
+                if (alfa >= beta) {
+                    System.out.printf("Poda: alfa %d, beta: %d\n", alfa, beta);
+                    return beta;
+                }
+                tablero[coordenadas.getValor1()][coordenadas.getValor2()] = 0;
+            }
+            return beta;
+        }
     }
 
 }

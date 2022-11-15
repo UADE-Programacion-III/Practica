@@ -12,7 +12,6 @@ public class JuegosTest {
 
     @Test
     public void fosforosTest() {
-        Jugada<Integer> jugada = new Jugada<>();
         ConjuntoTDA<Jugada<Integer>> jugadas = new Conjunto<>();
         jugadas.inicializarConjunto();
         assertEquals(-1, Juegos.fosforos(7, 0, jugadas));
@@ -30,5 +29,11 @@ public class JuegosTest {
         pilas.inicializarVector(1);
         pilas.agregarElemento(0, 6);
         assertEquals(1, Juegos.monedas(pilas, 1));
+    }
+
+    @Test
+    public void tatetiAlfaBetaTest() {
+        char [][] tablero = new char[][]{{'X', 0, 'X'}, {0, 'O', 0}, {'O', 0, 'O'}};
+        assertEquals(1, Juegos.tatetiAlfaBeta(tablero, Juegos.JUGADOR, Integer.MIN_VALUE, Integer.MAX_VALUE));
     }
 }
